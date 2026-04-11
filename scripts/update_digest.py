@@ -19,25 +19,39 @@ except Exception:
 
 
 TOPICS = {
+  "bigtech": {
+    "label": "Big tech (IN/US)",
+    "feeds": [
+      "https://news.google.com/rss/search?q=(Apple+OR+Google+OR+Microsoft+OR+Amazon+OR+Meta+OR+Netflix)+when:1d&hl=en-US&gl=US&ceid=US:en",
+      "https://news.google.com/rss/search?q=(Google+India+OR+Apple+India+OR+Microsoft+India+OR+Amazon+India+OR+Meta+India)+when:2d&hl=en-IN&gl=IN&ceid=IN:en",
+    ],
+  },
+  "markets": {
+    "label": "India markets",
+    "feeds": [
+      "https://news.google.com/rss/search?q=(Sensex+OR+Nifty+OR+NSE+OR+BSE)+when:1d&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=(mutual+funds+OR+SIP+OR+AMC+OR+SEBI)+when:2d&hl=en-IN&gl=IN&ceid=IN:en",
+    ],
+  },
   "ai": {
-    "label": "AI & tech",
+    "label": "AI",
     "feeds": [
-      "https://news.google.com/rss/search?q=(artificial+intelligence+OR+OpenAI+OR+Anthropic+OR+DeepMind)+when:1d&hl=en-IN&gl=IN&ceid=IN:en",
-      "https://news.google.com/rss/search?q=(NVIDIA+OR+TSMC+OR+chips)+AI+when:1d&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=(artificial+intelligence+OR+OpenAI+OR+Anthropic+OR+DeepMind+OR+Gemini+OR+Copilot)+when:1d&hl=en-US&gl=US&ceid=US:en",
+      "https://news.google.com/rss/search?q=(AI+startup+OR+AI+agents+OR+AI+product+launch)+when:2d&hl=en-IN&gl=IN&ceid=IN:en",
     ],
   },
-  "startups": {
-    "label": "Startups & VC",
+  "digital": {
+    "label": "Digital products",
     "feeds": [
-      "https://news.google.com/rss/search?q=(startup+funding+OR+Series+A+OR+venture+capital+OR+acquisition)+when:1d&hl=en-IN&gl=IN&ceid=IN:en",
-      "https://news.google.com/rss/search?q=(AI+startup+funding+OR+seed+round)+when:1d&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=(\"digital+products\"+OR+\"creator+economy\"+OR+\"indie+hacker\"+OR+\"micro+SaaS\")+when:7d&hl=en-US&gl=US&ceid=US:en",
+      "https://news.google.com/rss/search?q=(\"side+hustle\"+OR+\"Notion+template\"+OR+\"online+course\"+OR+\"newsletter\"+monetization)+when:7d&hl=en-IN&gl=IN&ceid=IN:en",
     ],
   },
-  "india": {
-    "label": "India business",
+  "jobs": {
+    "label": "Jobs & skills (India)",
     "feeds": [
-      "https://news.google.com/rss/search?q=(India+economy+OR+RBI+OR+inflation+OR+GDP)+when:1d&hl=en-IN&gl=IN&ceid=IN:en",
-      "https://news.google.com/rss/search?q=(India+stock+market+OR+Sensex+OR+Nifty)+when:1d&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=(India+hiring+OR+job+market+India+OR+IT+jobs+India)+when:7d&hl=en-IN&gl=IN&ceid=IN:en",
+      "https://news.google.com/rss/search?q=(skills+in+demand+India+OR+AI+skills+India+OR+upskilling+India)+when:7d&hl=en-IN&gl=IN&ceid=IN:en",
     ],
   },
 }
@@ -167,7 +181,7 @@ def main():
     return 2
 
   articles = []
-  for topic_id in ("ai", "startups", "india"):
+  for topic_id in ("bigtech", "markets", "ai", "digital", "jobs"):
     articles.extend(fetch_topic(topic_id))
 
   if len(articles) < 6:
@@ -180,4 +194,3 @@ def main():
 
 if __name__ == "__main__":
   raise SystemExit(main())
-
