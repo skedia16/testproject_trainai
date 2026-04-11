@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Morning Brief</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F5F2EB;
+    --surface: #FDFCF8;
+    --border: rgba(0,0,0,0.08);
+    --border-strong: rgba(0,0,0,0.14);
+    --text: #1A1814;
+    --muted: #7A7670;
+    --faint: #B0ADA7;
+    --accent: #C4683A;
+    --accent-light: #F5EDE7;
+    --tag-ai-bg: #E8EDF5; --tag-ai: #2B4A7A;
+    --tag-bigtech-bg: #EDE8F5; --tag-bigtech: #4A2B7A;
+    --tag-markets-bg: #E8F5EF; --tag-markets: #1F5A3A;
+    --tag-digital-bg: #F5E8EA; --tag-digital: #7A2B3A;
+    --tag-jobs-bg: #EAF3F5; --tag-jobs: #245A6A;
+  }
+
+  body {
+    font-family: 'DM Sans', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .masthead {
+    border-bottom: 1px solid var(--border-strong);
+    background: var(--surface);
+    padding: 0 2rem;
+  }
+
+  .masthead-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2rem 0 1.25rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .masthead-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--faint);
+    margin-bottom: 4px;
+  }
+
+  .masthead-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 42px;
+    line-height: 1;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+
+  .masthead-title em {
+    color: var(--accent);
+    font-style: italic;
+  }
+
+  .masthead-date {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+
+  .refresh-btn {
+    font-family: 'DM Sans', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    padding: 8px 18px;
+    border: 1px solid var(--border-strong);
+    border-radius: 100px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+    white-space: nowrap;
+    margin-bottom: 4px;
+  }
+
+  .refresh-btn:hover { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+  .refresh-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .nav-bar {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0.75rem 0 0;
+    display: flex;
+    gap: 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .nav-tab {
+    font-family: 'DM Sans', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 8px 18px 10px;
+    border: none;
+    background: transparent;
+    color: var(--faint);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.15s;
+  }
+
+  .nav-tab:hover { color: var(--muted); }
+  .nav-tab.active { color: var(--text); border-bottom-color: var(--accent); font-weight: 500; }
+
+  .main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2rem 2rem 4rem;
+  }
+
+  .feed { display: flex; flex-direction: column; gap: 0; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 10px;
+    cursor: default;
+    transition: border-color 0.15s, transform 0.15s;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .card:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+  .card.clickable { cursor: pointer; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card:nth-child(2) { animation-delay: 0.05s; }
+  .card:nth-child(3) { animation-delay: 0.1s; }
+  .card:nth-child(4) { animation-delay: 0.15s; }
+  .card:nth-child(5) { animation-delay: 0.2s; }
+  .card:nth-child(6) { animation-delay: 0.25s; }
+  .card:nth-child(7) { animation-delay: 0.3s; }
+  .card:nth-child(8) { animation-delay: 0.35s; }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 100px;
+  }
+
+  .tag-ai { background: var(--tag-ai-bg); color: var(--tag-ai); }
+  .tag-bigtech { background: var(--tag-bigtech-bg); color: var(--tag-bigtech); }
+  .tag-markets { background: var(--tag-markets-bg); color: var(--tag-markets); }
+  .tag-digital { background: var(--tag-digital-bg); color: var(--tag-digital); }
+  .tag-jobs { background: var(--tag-jobs-bg); color: var(--tag-jobs); }
+
+  .card-source {
+    font-size: 12px;
+    color: var(--faint);
+  }
+
+  .card-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--border-strong); }
+  .card-time { font-size: 12px; color: var(--faint); }
+
+  .card h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 1.35;
+    color: var(--text);
+    margin-bottom: 7px;
+  }
+
+  .card p {
+    font-size: 13.5px;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  .card-link {
+    display: inline-block;
+    font-size: 12px;
+    color: var(--accent);
+    margin-top: 10px;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .card-link:hover { text-decoration: underline; }
+
+  .card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+
+  .action-btn {
+    font-family: 'DM Sans', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 7px 10px;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    line-height: 1;
+  }
+
+  .action-btn:hover { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+  .action-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .action-btn.primary:hover { filter: brightness(0.98); }
+  .action-btn.danger:hover { background: rgba(196,104,58,0.10); border-color: rgba(196,104,58,0.55); color: var(--accent); }
+  .action-btn[aria-pressed="true"] { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--faint);
+    font-size: 14px;
+  }
+
+  .status-bar {
+    font-size: 11px;
+    color: var(--faint);
+    text-align: center;
+    margin-top: 1.5rem;
+    letter-spacing: 0.04em;
+  }
+
+  .notice {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .notice-inner {
+    background: var(--accent-light);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 14px;
+  }
+
+  .notice-inner a { color: var(--accent); text-decoration: none; font-weight: 500; }
+  .notice-inner a:hover { text-decoration: underline; }
+
+  @media (max-width: 600px) {
+    .masthead-title { font-size: 30px; }
+    .main { padding: 1.5rem 1rem 3rem; }
+    .masthead-inner { padding: 1.5rem 0 1rem; }
+    .masthead { padding: 0 1rem; }
+    .notice { padding: 0 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="masthead-left">
+      <p class="masthead-eyebrow">Shreya's daily brief</p>
+      <h1 class="masthead-title">Morning <em>Brief</em></h1>
+      <p class="masthead-date" id="dateline"></p>
+    </div>
+    <button class="refresh-btn" id="refreshBtn" type="button">
+      <span id="refreshIcon">↻</span> Refresh
+    </button>
+  </div>
+  <nav class="nav-bar">
+    <button class="nav-tab active" onclick="filterTab('all', this)">All</button>
+    <button class="nav-tab" onclick="filterTab('bigtech', this)">Big tech</button>
+    <button class="nav-tab" onclick="filterTab('markets', this)">India markets</button>
+    <button class="nav-tab" onclick="filterTab('ai', this)">AI</button>
+    <button class="nav-tab" onclick="filterTab('digital', this)">Digital products</button>
+    <button class="nav-tab" onclick="filterTab('jobs', this)">Jobs & skills</button>
+    <button class="nav-tab" onclick="filterTab('saved', this)">Saved</button>
+  </nav>
+</header>
+
+<div class="notice">
+  <div class="notice-inner" id="notice">
+    Loading…
+  </div>
+</div>
+
+<main class="main">
+  <div class="feed" id="feed"></div>
+  <p class="status-bar" id="statusBar"></p>
+  <noscript>
+    <div class="empty-state">JavaScript is required to display the digest cards.</div>
+  </noscript>
+</main>
+
+<script>
+const TOPICS = {
+  bigtech: { id: 'bigtech', label: 'Big tech (IN/US)', tagClass: 'tag-bigtech' },
+  markets: { id: 'markets', label: 'India markets', tagClass: 'tag-markets' },
+  ai: { id: 'ai', label: 'AI', tagClass: 'tag-ai' },
+  digital: { id: 'digital', label: 'Digital products', tagClass: 'tag-digital' },
+  jobs: { id: 'jobs', label: 'Jobs & skills (India)', tagClass: 'tag-jobs' }
+};
+
+// This page does not fetch live news in the browser (no API keys, no CORS/RSS complexity).
+// Instead, it’s meant to be regenerated by the Daily Shreya Digest automation each morning.
+const BUILD_INFO = {
+  generatedAtIso: '2026-04-11T18:45:00+05:30',
+  timezoneLabel: 'IST'
+};
+
+const ARTICLES = [
+  {
+    topicId: 'bigtech',
+    title: 'Big tech: placeholder (will auto-update)',
+    summary: 'This list is rebuilt daily from free RSS feeds by GitHub Actions. Run the workflow once to populate today’s items.',
+    source: 'Daily Digest',
+    url: '',
+    published: ''
+  },
+  {
+    topicId: 'markets',
+    title: 'India markets: placeholder (will auto-update)',
+    summary: 'Once the workflow runs, you’ll see fresh stock/mutual fund headlines here. Items stay until you mark them Read or Delete.',
+    source: 'Daily Digest',
+    url: '',
+    published: ''
+  },
+  {
+    topicId: 'ai',
+    title: 'AI: placeholder (will auto-update)',
+    summary: 'New launches, products, and “what people are doing” show up here after the daily run.',
+    source: 'Daily Digest',
+    url: '',
+    published: ''
+  },
+  {
+    topicId: 'digital',
+    title: 'Digital products: placeholder (will auto-update)',
+    summary: 'Side hustles, creator monetization, micro‑SaaS, templates, newsletters, and more.',
+    source: 'Daily Digest',
+    url: '',
+    published: ''
+  },
+  {
+    topicId: 'jobs',
+    title: 'Jobs & skills: placeholder (will auto-update)',
+    summary: 'Evolving India job market updates and skills that are becoming relevant.',
+    source: 'Daily Digest',
+    url: '',
+    published: ''
+  }
+];
+
+const STORAGE = {
+  pending: 'shreya_digest_pending_v1',
+  saved: 'shreya_digest_saved_v1',
+  dismissed: 'shreya_digest_dismissed_v1'
+};
+
+let pendingArticles = [];
+let savedArticles = [];
+let activeTab = 'all';
+let fetchedAt = null;
+
+function setDateline() {
+  const now = new Date();
+  document.getElementById('dateline').textContent = now.toLocaleDateString('en-IN', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  });
+}
+
+function normalizeArticles(articles) {
+  return (articles || []).map(a => {
+    const t = TOPICS[a.topicId];
+    return {
+      title: a.title || 'Untitled',
+      summary: a.summary || '',
+      source: a.source || 'Unknown',
+      url: a.url || '',
+      published: a.published || '',
+      addedAt: a.addedAt || null,
+      topicId: a.topicId,
+      topicLabel: t ? t.label : (a.topicId || 'Other'),
+      tagClass: t ? t.tagClass : 'tag-ai',
+      hours_ago: a.hours_ago ?? null
+    };
+  });
+}
+
+function renderFeed() {
+  const feed = document.getElementById('feed');
+  const isSaved = activeTab === 'saved';
+  const base = isSaved ? savedArticles : pendingArticles;
+  const filtered = activeTab === 'all' || isSaved ? base : base.filter(a => a.topicId === activeTab);
+
+  if (!filtered.length) {
+    feed.innerHTML = isSaved
+      ? '<div class="empty-state">No saved articles yet.</div>'
+      : '<div class="empty-state">No unread articles right now.</div>';
+    return;
+  }
+
+  feed.innerHTML = filtered.map(a => {
+    const key = articleKey(a);
+    const saved = isArticleSaved(key);
+    const timeLabel = a.published || (a.hours_ago != null ? `${a.hours_ago}h ago` : '');
+    return `
+    <div class="card ${a.url ? 'clickable' : ''}" ${a.url ? `onclick="window.open('${a.url}','_blank')"` : ''}>
+      <div class="card-meta">
+        <span class="tag ${a.tagClass}">${a.topicLabel}</span>
+        <span class="card-source">${escapeHtml(a.source)}</span>
+        ${timeLabel ? `<span class="card-dot"></span><span class="card-time">${escapeHtml(timeLabel)}</span>` : ''}
+      </div>
+      <h3>${escapeHtml(a.title)}</h3>
+      <p>${escapeHtml(a.summary)}</p>
+      ${a.url ? `<a class="card-link" href="${a.url}" target="_blank" rel="noreferrer" onclick="event.stopPropagation()">Open →</a>` : ''}
+      <div class="card-actions">
+        ${!isSaved ? `<button class="action-btn primary" type="button" data-action="read" data-key="${escapeAttr(key)}">Read</button>` : ''}
+        <button class="action-btn" type="button" data-action="save" data-key="${escapeAttr(key)}" aria-pressed="${saved ? 'true' : 'false'}">${saved ? 'Saved' : 'Save'}</button>
+        ${!isSaved ? `<button class="action-btn danger" type="button" data-action="delete" data-key="${escapeAttr(key)}">Delete</button>` : `<button class="action-btn danger" type="button" data-action="unsave" data-key="${escapeAttr(key)}">Remove</button>`}
+      </div>
+    </div>
+  `}).join('');
+
+  if (fetchedAt) {
+    document.getElementById('statusBar').textContent =
+      `${isSaved ? 'Saved' : 'Unread'}: ${filtered.length} · Updated ${fetchedAt.toLocaleString('en-IN', { hour: '2-digit', minute: '2-digit' })}`;
+  }
+}
+
+function filterTab(id, el) {
+  activeTab = id;
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderFeed();
+}
+
+function hardRefresh() {
+  // Bust caches (useful on hosted sites) while preserving the current URL.
+  const url = new URL(window.location.href);
+  url.searchParams.set('_r', String(Date.now()));
+  window.location.replace(url.toString());
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
+function escapeAttr(s) {
+  return escapeHtml(s).replace(/"/g, '&quot;');
+}
+
+function loadJson(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return fallback;
+    return JSON.parse(raw);
+  } catch {
+    return fallback;
+  }
+}
+
+function saveJson(key, val) {
+  try {
+    localStorage.setItem(key, JSON.stringify(val));
+  } catch {
+    // ignore
+  }
+}
+
+function articleKey(a) {
+  const url = (a && a.url ? String(a.url) : '').trim();
+  if (url) return url.split('#', 1)[0];
+  return `no-url:${(a.topicId || 'x')}|${(a.title || '').slice(0, 64)}`;
+}
+
+function loadDismissedSet() {
+  const arr = loadJson(STORAGE.dismissed, []);
+  return new Set(Array.isArray(arr) ? arr : []);
+}
+
+function saveDismissedSet(set) {
+  saveJson(STORAGE.dismissed, Array.from(set));
+}
+
+function isArticleSaved(key) {
+  return savedArticles.some(a => articleKey(a) === key);
+}
+
+function upsertByKey(list, item) {
+  const key = articleKey(item);
+  const idx = list.findIndex(x => articleKey(x) === key);
+  if (idx >= 0) list[idx] = { ...list[idx], ...item };
+  else list.push(item);
+}
+
+function ingestTodaysArticles(today) {
+  const dismissed = loadDismissedSet();
+  const normalized = normalizeArticles(today).map(a => ({ ...a, addedAt: a.addedAt || Date.now() }));
+
+  normalized.forEach(a => {
+    const key = articleKey(a);
+    if (dismissed.has(key)) return;
+    upsertByKey(pendingArticles, a);
+  });
+
+  pendingArticles.sort((a, b) => (b.addedAt || 0) - (a.addedAt || 0));
+}
+
+function persistState() {
+  saveJson(STORAGE.pending, pendingArticles);
+  saveJson(STORAGE.saved, savedArticles);
+}
+
+function markRead(key) {
+  const dismissed = loadDismissedSet();
+  dismissed.add(key);
+  saveDismissedSet(dismissed);
+  pendingArticles = pendingArticles.filter(a => articleKey(a) !== key);
+  persistState();
+  renderFeed();
+}
+
+function deleteFromPending(key) {
+  const dismissed = loadDismissedSet();
+  dismissed.add(key);
+  saveDismissedSet(dismissed);
+  pendingArticles = pendingArticles.filter(a => articleKey(a) !== key);
+  persistState();
+  renderFeed();
+}
+
+function toggleSave(key) {
+  const inSaved = isArticleSaved(key);
+  if (inSaved) {
+    savedArticles = savedArticles.filter(a => articleKey(a) !== key);
+  } else {
+    const found = pendingArticles.find(a => articleKey(a) === key);
+    if (found) upsertByKey(savedArticles, found);
+  }
+  persistState();
+  renderFeed();
+}
+
+function unsave(key) {
+  savedArticles = savedArticles.filter(a => articleKey(a) !== key);
+  persistState();
+  renderFeed();
+}
+
+function init() {
+  setDateline();
+  pendingArticles = normalizeArticles(loadJson(STORAGE.pending, []));
+  savedArticles = normalizeArticles(loadJson(STORAGE.saved, []));
+  ingestTodaysArticles(ARTICLES);
+  persistState();
+  fetchedAt = new Date();
+  try {
+    const generated = BUILD_INFO.generatedAtIso ? new Date(BUILD_INFO.generatedAtIso) : null;
+    const generatedLabel = generated && !isNaN(generated.getTime())
+      ? generated.toLocaleString('en-IN', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+      : null;
+    document.getElementById('notice').textContent =
+      generatedLabel
+        ? `Last generated: ${generatedLabel} (${BUILD_INFO.timezoneLabel || 'local time'}) · Refresh to see updates`
+        : 'Refresh to see the latest updated file on disk';
+  } catch {
+    document.getElementById('notice').textContent = 'Refresh to see the latest updated file on disk';
+  }
+  renderFeed();
+}
+
+init();
+
+document.getElementById('refreshBtn')?.addEventListener('click', hardRefresh);
+document.getElementById('feed')?.addEventListener('click', (e) => {
+  const btn = e.target && e.target.closest ? e.target.closest('button[data-action]') : null;
+  if (!btn) return;
+  e.preventDefault();
+  e.stopPropagation();
+  const action = btn.getAttribute('data-action');
+  const key = btn.getAttribute('data-key');
+  if (!action || !key) return;
+  if (action === 'read') markRead(key);
+  else if (action === 'delete') deleteFromPending(key);
+  else if (action === 'save') toggleSave(key);
+  else if (action === 'unsave') unsave(key);
+});
+</script>
+</body>
+</html>
